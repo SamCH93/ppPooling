@@ -1,0 +1,769 @@
+%% Template for a scientific paper by Samuel Pawel
+%% Last modification: 17. December 2020
+\documentclass[a4paper, 11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphics}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath, amssymb}
+\usepackage{doi} % automatic doi-links
+\usepackage[round]{natbib} % bibliography
+\usepackage{booktabs} % nicer tables
+\usepackage[title]{appendix} % better appendices
+\usepackage{nameref} % reference appendices with names
+\usepackage[onehalfspacing]{setspace} % more space
+\usepackage[labelfont=bf,font=small]{caption} % smaller captions
+\usepackage{todonotes}
+\usepackage{array}
+
+
+%% margins
+%% ----------------------------------------------------------------------------
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  total={170mm,257mm},
+  left=25mm,
+  right=25mm,
+  top=20mm,
+  bottom=20mm,
+}
+
+%% title, authors, affiliations, mail
+%% ----------------------------------------------------------------------------
+\newcommand\longtitle{Power Priors for Replication Studies}
+\newcommand\shorttitle{Power Priors for Replication Studies} % if longtitle too long, change here
+\newcommand\subtitle{}
+\newcommand\longauthors{Samuel Pawel\textsuperscript{*}, Frederik Aust\textsuperscript{$\dagger$}, Leonhard Held\textsuperscript{*}, Eric-Jan Wagenmakers\textsuperscript{$\dagger$}}
+\newcommand\shortauthors{S. Pawel, F. Aust, L. Held, E.-J. Wagenmakers} % if longauthors too long, change here
+\newcommand\affiliation{
+  * Department of Biostatistics, University of Zurich \\
+  $\dagger$ Department of Psychological Methods, University of Amsterdam
+}
+\newcommand\mail{samuel.pawel@uzh.ch}
+\title{
+  \vspace{-2em}
+  \textbf{\longtitle} \\
+  \subtitle
+}
+\author{
+  \textbf{\longauthors} \\
+  \affiliation \\
+  E-mail: \href{mailto:\mail}{\mail}
+}
+\date{\today} %don't forget to hard-code date when submitting to arXiv!
+
+%% hyperref options
+%% ----------------------------------------------------------------------------
+\usepackage{hyperref}  
+\hypersetup{
+  bookmarksopen=true, 
+  breaklinks=true,
+  pdftitle={\shorttitle}, 
+  pdfauthor={\shortauthors},
+  pdfsubject={},
+  pdfkeywords={},
+  colorlinks=true,
+  linkcolor=RoyalPurple,
+  anchorcolor=black,
+  citecolor=MidnightBlue,
+  urlcolor=black,
+}
+
+%% Headers and footers
+%% ----------------------------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\shorttitle}
+\rhead{\shortauthors}
+
+%% custom commands
+%% ----------------------------------------------------------------------------
+\input{defs.tex}
+
+\begin{document}
+\maketitle
+
+%% Disclaimer that a preprint
+\begin{center}
+  {\color{red}This is a preprint which has not yet been peer reviewed.}
+\end{center}
+
+<< "main-setup", include = FALSE >>=
+## knitr options
+library(knitr)
+opts_chunk$set(fig.height = 4,
+               echo = FALSE,
+               warning = FALSE,
+               message = FALSE,
+               cache = FALSE,
+               eval = TRUE)
+
+## should sessionInfo be printed at the end?
+Reproducibility <- TRUE
+
+## Packages
+library(ggplot2) # plotting
+library(hypergeo) # confluent hypergeometric function
+
+## ## Data (see Figure 6.1 in 10.1002/14651858.CD001321.pub5 )
+## ## current study Ferrara (2009)
+## x <- 5 # cranberry group
+## n <- 27 # cranberry group
+## xp <- 11 # probiotic group
+## np <- 26 # probiotic group
+## rr <- (x/n)/(xp/np)
+## logrr <- log(rr)
+## selogrr <- sqrt(1/x - 1/n + 1/xp - 1/n)
+## ## historical study Kontiokari (2001)
+## x0 <- 8 # cranberry group
+## n0 <- 50 # cranberry group
+## xp0 <- 19 # probiotic group
+## np0 <- 49 # probiotic group
+## rr0 <- (x0/n0)/(xp0/np0)
+## logrr0 <- log(rr0)
+## selogrr0 <- sqrt(1/x0 - 1/n0 + 1/xp0 - 1/n0)
+@
+
+%% Abstract
+%% -----------------------------------------------------------------------------
+\begin{center}
+  \begin{minipage}{13cm} {\small
+      \rule{\textwidth}{0.5pt} \\
+      {\centering \textbf{Abstract} \\
+        Power priors are used for incorporating historical data
+        in Bayesian analyses by taking the likelihood of the
+        historical data raised to the power $\alpha$ as the prior
+        distribution for the model parameters. The power parameter $\alpha$ is
+        typically unknown and assigned a prior distribution, most commonly
+        a beta distribution. Here, we give a
+        novel theoretical result on the resulting marginal posterior distribution
+        of $\alpha$
+        % We give the limiting marginal posterior of $\alpha$
+        in case of the the normal and binomial model.
+        Counterintuitively, when the current data perfectly
+        mirror the historical data and the sample sizes from both data sets become arbitrarily large,
+        the marginal posterior of $\alpha$ does not converge to
+        a point mass at $\alpha = 1$. This
+        implies that a complete pooling of historical and current data is
+        impossible if a power prior with beta prior for $\alpha$ is used.
+        The result explains the often empirically observed
+        phenomenon that the marginal posterior of $\alpha$ hardly changes from
+        its prior when there is no conflict between historical and current data.
+        }
+      \rule{\textwidth}{0.4pt} \\
+      \textit{Keywords}: }
+\end{minipage}
+\end{center}
+
+\section{Introduction}
+Power priors are a class of prior distributions which can be used for incorporation of
+historical data in Bayesian analysis of current data \citep{Chen2000}.
+% and they have
+% been used successfully in various domains, such as, clinical trials, environmental science, or
+% psychometrics \citep{Ibrahim2015}.
+% \citep[see \eg{}][for some case studies]{Ibrahim2015}.
+The basic idea is to use the likelihood of the historical data raised
+to the power of $\alpha \in [0, 1]$ as the prior distribution for the model parameters $\theta$.
+This leads to the posterior distribution of $\theta$ being informed by both the current and
+the historical data, typically resulting in an information gain compared to an analysis
+of the current data in isolation.
+The power parameter $\alpha$ determines how much the historical data are discounted, thus
+representing a quantitative compromise between the extreme positions of completely
+trusting ($\alpha = 1$) and completely ignoring them ($\alpha = 0$).
+% Since their introduction, power priors have been used in various applications
+% where historical data are available, for instance, clinical trials, environmental science,
+% or psychometrics \citep[see][for some case studies]{Ibrahim2015}.
+
+Usually, the power parameter $\alpha$ is unknown and assigned a prior distribution. In this case,
+the marginal posterior density of the model parameters $\theta$ based on the current data $D$ and
+the historical data $D_0$ is given by
+\begin{align*}
+    f(\theta \given D, D_0) = \int_0^1 f(\theta \given D, D_0, \alpha)  f(\alpha \given D, D_0)
+     \text{d}\alpha,
+\end{align*}
+that is, the posterior of $\theta$ based on a fixed power parameter $\alpha$ averaged over the
+marginal posterior density of $\alpha$. The marginal posterior distribution of $\alpha$ thus
+determines how much pooling between the two data sets occurs, and intuition suggests that
+it should become increasingly concentrated at $\alpha = 1$ when there is no conflict between
+the data sets, and their sample size increases.
+Here, we show that this is not the case, at least not in the typical situation when $\alpha$
+is assigned a beta prior distribution and the data have normal or binomial likelihood. Instead,
+there is is a limiting posterior distribution which is hardly different from the prior.
+
+\begin{table}[!htb]
+  \centering
+  \caption{Historical and current data on the comparison between Fidaxcomicin and
+  Vancomicion with respect to their effect on \textit{Clostridium
+    difficile}-associated diarrhoea in adults. Data taken from the meta-analysis
+  of \citet{Nelson2017}.}
+\label{table:data}
+<< "example-data" >>=
+## Data (see Figure 5.1 in https://doi.org/10.1002/14651858.CD004610.pub5)
+## -----------------------------------------------------------------------------
+
+## current data Cornley (2012)
+x <- 193 # Fidaxomicin group
+n <- 270 # Fidaxomicin group
+p <- x/n
+x2 <- 163 # Vancomicin group
+n2 <- 265 # Vancomicin group
+p2 <- x2/n2
+rr <- p/p2
+logrr <- log(rr)
+selogrr <- sqrt(1/x - 1/n + 1/x2 - 1/n2)
+rrci <- exp(logrr + c(-1, 1)*qnorm(p = 0.975)*selogrr)
+rrciFormat <- paste0("(", paste0(round(rrci, 2), collapse = ", "), ")")
+
+## historical data Louie (2011)
+x0 <- 214 # Fidaxomicin group
+n0 <- 302 # Fidaxomicin group
+p0 <- x0/n0
+x20 <- 198 # Vancomicin group
+n20 <- 327 # Vancomicin group
+p20 <- x20/n20
+rr0 <- p0/p20
+logrr0 <- log(rr0)
+selogrr0 <- sqrt(1/x0 - 1/n0 + 1/x20 - 1/n20)
+rrci0 <- exp(logrr0 + c(-1, 1)*qnorm(p = 0.975)*selogrr0)
+rrci0Format <- paste0("(", paste0(round(rrci0, 2), collapse = ", "), ")")
+@
+\begin{tabular}{cccc}
+  \toprule
+  Study & Risk (Fidaxomicin) & Risk (Vancomicin) & Risk ratio (95\% CI) \\
+  \midrule
+  \citet{Cornely2012} & $\dfrac{\Sexpr{x}}{\Sexpr{n}} = \Sexpr{round(p*100, 1)}\%$
+  & $\dfrac{\Sexpr{x2}}{\Sexpr{n2}} = \Sexpr{round(p2*100, 1)}\%$
+  & $\Sexpr{round(rr, 2)}$ \Sexpr{rrci0Format} \\
+  & & & \\
+  \citet{Louie2011} & $\dfrac{\Sexpr{x0}}{\Sexpr{n0}} = \Sexpr{round(p0*100, 1)}\%$
+  & $\dfrac{\Sexpr{x20}}{\Sexpr{n20}} = \Sexpr{round(p20*100, 1)}\%$
+  & $\Sexpr{round(rr0, 2)}$ \Sexpr{rrci0Format} \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htb]
+<< "figure-analysis-data", fig.height = 4 >>=
+## marginal posterior of alpha for data example
+p <- 1
+q <- 1
+aseq <- seq(0, 1, 0.001)
+intFun <- function(alpha) {
+    dnorm(x = logrr, mean = logrr0, sd = sqrt(selogrr^2 + selogrr0^2/alpha)) *
+        dbeta(x = alpha, shape1 = p, shape = q)
+}
+normconst <- integrate(f = intFun, lower = 0, upper = 1)$value
+adensity <- intFun(alpha = aseq)/normconst
+
+## best-case marginal posterior of alpha
+adensityBest <- dbeta(x = aseq, shape1 = p + 0.5, shape2 = q)
+
+## marginal posterior of theta for data example
+tseq <- seq(-0.1, 0.4, length.out = 500)
+tdensity <- sapply(X = tseq, FUN = function(t) {
+    integrate(f = function(alpha) {
+        dnorm(x = logrr, mean = t, sd = selogrr) *
+            dnorm(x = t, mean = logrr0, sd = sqrt(selogrr0^2/alpha)) *
+            dbeta(x = alpha, shape1 = p, shape2 = q)/normconst
+    }, lower = 0, upper = 1)$value
+})
+
+## posterior based on fixed alpha
+postFixed <- function(t, alpha) {
+    postvar <- 1/(1/selogrr^2 + alpha/selogrr0^2)
+    postmean <- postvar*(logrr/selogrr^2 + logrr0*alpha/selogrr0^2)
+    tdensComplete <- dnorm(x = t, mean = postmean, sd = sqrt(postvar))
+}
+
+## posterior based on complete pooling (alpha = 1)
+tdensComplete <- postFixed(t = tseq, alpha = 1)
+
+## posterior based on best-case pooling
+tdensBest <- sapply(X = tseq, FUN = function(t) {
+    integrate(f = function(a) {
+    postFixed(t = t, alpha = a) * dbeta(x = a, shape1 = p + 0.5, shape2 = q)
+    }, lower = 0, upper = 1)$value
+})
+
+## combine all into one data frame
+apar <- "'Power parameter' ~ alpha"
+tpar <- "'Log risk ratio' ~ theta"
+t1 <- "'observed'"
+t2 <- "'best-case'"
+t3 <- "'complete pooling (' * alpha == 1 * ')' "
+plotDF <- rbind(data.frame(x = tseq, y = tdensity, parameter = tpar, type = t1),
+                data.frame(x = tseq, y = tdensComplete, parameter = tpar, type = t3),
+                data.frame(x = tseq, y = tdensBest, parameter = tpar, type = t2),
+                data.frame(x = aseq, y = adensity, parameter = apar, type = t1),
+                data.frame(x = aseq, y = adensityBest, parameter = apar, type = t2))
+linetypes <-  c(1, 2, 3)
+names(linetypes) <- c(t1, t2, t3)
+plotDF$parameter <- factor(x = plotDF$parameter, levels = c(apar, tpar))
+
+## plot marginal posterior densities
+ggplot(data = plotDF, aes(x = x, y = y, linetype = type)) +
+    facet_wrap(~ parameter, labeller = label_parsed,
+               strip.position = "bottom", scales = "free") +
+    geom_line(alpha = 0.8) +
+    labs(x = NULL, y = "Marginal posterior density", linetype = "") +
+    scale_linetype_manual(values = linetypes, labels = scales::parse_format()) +
+    theme_bw() +
+    theme(legend.position = "top", panel.grid.minor = element_blank(),
+          strip.background.x = element_blank(), strip.placement = "outside",
+          strip.text = element_text(size = 11))
+@
+
+\caption{Power prior modeling of current data
+  $D = \{\that = \Sexpr{round(logrr, 2)}, \sigma = \Sexpr{round(selogrr, 2)}\}$
+  from \citet{Cornely2012} and historical data
+  $D_{0} = \{\that_{0} = \Sexpr{round(logrr0, 2)}, \sigma_{0} = \Sexpr{round(selogrr0, 2)}\}$
+  from \citet{Louie2011}. A $\alpha \sim \Be(1, 1)$ prior is used for the power
+  parameter. Marginal posterior densities are computed by
+  numerical integration.}
+  \label{fig:analysis}
+\end{figure}
+
+\section{Parameter estimates under normality}
+Let $D = \{\that, \sigma^2\}$ and $D_0 = \{\that_0, \sigma^2_0\}$ denote estimates of an
+unknown parameter $\theta$ and their (assumed to be known) standard errors obtained from
+current and historical data, respectively. For both estimates, assume a normal likelihood
+centered around the parameter $\theta$ and with variance equal to the squared standard
+error. The default ``normalized'' version of the power prior \citep{Duan2005, Neuenschwander2009}
+is obtained via updating of an initial prior for the parameter $\theta$ by the likelihood
+of the historical data raised to the power $\alpha$. The prior for the power parameter
+$\alpha$ is then marginally assigned.
+Here and henceforth we will use an initial uniform prior for the
+parameter $f(\theta) \propto 1$ and a beta prior for the power parameter $\alpha \sim \Be(p, q)$.
+This choice leads to the  normalized power prior
+\begin{align}
+    \label{eq:nppnormal}
+    f(\theta, \alpha \given D_0)
+    = \Nor(\theta\given \that_0, \sigma^2_0 /\alpha) \Be(\alpha \given p, q)
+\end{align}
+with $\Nor(\cdot \given m, v)$ the normal density function and $\Be(\cdot \given p, q)$ the beta
+density function. Combining~\eqref{eq:nppnormal} with the likelihood of the current data
+produces a joint posterior for parameter $\theta$ and power parameter $\alpha$, from which a
+marginal posterior for $\alpha$ can be obtained by integrating out $\theta$
+\begin{align}
+    \label{eq:margpostnormal}
+    f(\alpha \given D, D_0)
+    = \frac{\Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
+    \int_0^1 \Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha^\prime) \Be(\alpha^\prime \given p, q)
+    \text{d}\alpha^\prime}.
+\end{align}
+The integral in the denominator of~\eqref{eq:margpostnormal} is in general
+not available in closed form, except in certain important situations which we will discuss
+in the following.
+
+The first situation occurs when the current data perfectly mirror the historical data in the
+sense that both parameter estimates are equivalent ($\that = \that_0$). In this case,
+several terms cancel in~\eqref{eq:margpostnormal} so that the integral
+be represented in terms of the hypergeometric function
+${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a}
+\text{d}t\}/\mbox{B}(b, c - b)$ with $\mbox{B}(x, y)$ the
+beta function \citep[chapter 15]{Abramowitz1964}, \ie{}
+\begin{align}
+    \label{eq:margpostsimilar}
+    f(\alpha \given D, D_0, \that = \that_0)
+    % &= \frac{(1/c + 1/\alpha)^{-1/2} \times \Be(\alpha\given p, q)}{
+    % \int_0^1 (1/c + 1/\alpha^\prime)^{-1/2} \times \Be(\alpha^\prime \given p, q)\,
+    % \text{d}\alpha^\prime} \\
+    &= \frac{(\alpha/c + 1)^{-1/2} \, \Be(\alpha \given p + 1/2, q)}{
+    {}_2F_1(1/2, p + 1/2, p + q + 1/2; -1/c)}.
+\end{align}
+where $c = \sigma^2_0/\sigma^2$ is the relative variance.
+The distribution~\eqref{eq:margpostsimilar} is close to a
+$\Be(p + 1/2, q)$ distribution which is hardly different from the
+$\Be(p, q)$ distribution despite perfect compatibility of both data sets.
+Importantly, the marginal posterior~\eqref{eq:margpostsimilar} does
+not depend on the actual value of the standard errors $\sigma$ and
+$\sigma_0$ but only the variance ratio $c$. This means
+that~\eqref{eq:margpostsimilar} holds for finite standard errors but
+also in the idealized mathematical situation where both standard errors go
+equally fast to zero (\ie{} infinite sample size), but with possibly
+different starting values ($c\neq 1$).
+Typically, the historical data are predetermined and only the standard error
+of the current study can be changed. It is therefore interesting
+to study the behavior of~\eqref{eq:margpostsimilar} for $c \to \infty$, \ie{}
+the current standard error $\sigma$ goes to zero while the historical standard
+error $\sigma_0$ remains fixed, reflecting an arbitrary increase of the
+current sample size. In that case it is straightforward to see from
+the power series representation of the hypergeometric function that
+\begin{align*}
+    \lim_{c\to\infty} {}_2F_1(1/2, p + 1/2, p + q + 1/2; -1/c)
+    &= \lim_{c\to\infty} 1 + \mathcal{O}(1/c)= 1.
+\end{align*}
+Hence, the limiting posterior density is
+\begin{align}
+    \label{eq:limitpostnormal1}
+    \lim_{c\to \infty} f(\alpha \given D, D_0, \that = \that_0)
+    &= \Be(\alpha \given p + 1/2, q),
+\end{align}
+that is, again a beta density but with updated success parameter $p + 1/2$, so
+just slightly different from the prior.
+
+
+The second situation in which the marginal posterior~\eqref{eq:margpostnormal} is
+available in closed form is the limiting case when the current standard error $\sigma$ goes
+to zero while the historical standard error $\sigma_0$ remains fixed (but the parameter
+estimates can take different values).
+In this case, the integral in~\eqref{eq:margpostnormal} can be represented by the confluent
+hypergeometric function
+$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \,\text{d}t\}/\mbox{B}(b - a, a)$
+ \citep[chapter 13]{Abramowitz1964} so that the marginal posterior is given by
+ \begin{align}
+     \label{eq:limitpostnormal2}
+     \lim_{\sigma \downarrow 0} f(\alpha \given D, D_0)
+     &= \Be(\alpha \given p + 1/2, q) \,
+     \frac{\exp\left\{-\alpha \, (\that - \that_0)^2/(2\sigma^2_0)\right\}}{
+     M\{p + 1/2, p + q + 1/2, -(\that - \that_0)^2/(2\sigma^2_0)\}}.
+ \end{align}
+ The distribution~\eqref{eq:limitpostnormal2} reduces
+to~\eqref{eq:limitpostnormal1} when the parameter estimates are equal
+($\that = \that_0$) since then the right fraction becomes one, which can
+be shown using the power series representation of the confluent
+hypergeometric function.
+\begin{figure}[!htb]
+<< "figure-limiting-posterior", fig.height = 3.5 >>=
+## function to compute limiting posterior of alpha when sr goes to zero
+## d = (hat(theta) - hat(theta)_0)^2/so^2
+limitPostAlpha <- function(alpha, p, q, d) {
+    dbeta(x = alpha, shape1 = p + 0.5, shape2 = q) *
+        exp(-0.5*d*alpha) /
+        abs(genhypergeo(U = p + 0.5, L = p + q + 0.5, z = -0.5*d))
+}
+
+## check that integrates to one
+## integrate(f = limitPostAlpha, lower = 0, upper = 1, p = 2, q = 1, d = 10)
+
+## compute for different d
+aseq <- seq(0, 1, 0.001)
+d <- seq(0, 4, 1)^2
+p <- 1
+q <- 1
+plotDF <- do.call("rbind", lapply(X = d, FUN = function(d) {
+    data.frame(x = aseq, d = d, dsqrt = sqrt(d),
+               density = limitPostAlpha(alpha = aseq, p = p, q = q, d = d))
+}))
+
+## marginal posterior for data example
+intFun <- function(alpha) {
+    dnorm(x = logrr, mean = logrr0, sd = sqrt(selogrr^2 + selogrr0^2/alpha)) *
+        dbeta(x = alpha, shape1 = p, shape = q)
+}
+normconst <- integrate(f = intFun, lower = 0, upper = 1)$value
+margplotDF <- data.frame(x = aseq, density = intFun(alpha = aseq)/normconst)
+
+## plot limiting density
+ggplot(data = plotDF, aes(x = x, y = density, color = ordered(dsqrt))) +
+    geom_line(alpha = 0.95, lty = 1) +
+    ## geom_line(data = margplotDF, aes(x = x, y = density), col = 1, alpha = 0.95) +
+    labs(color = bquote(frac("|" * hat(theta) -
+                              hat(theta)["0"] * "|",
+                             sigma["0"])),
+         x = bquote("Power parameter" ~ alpha),
+         y = "Limiting marginal posterior density") +
+    scale_color_viridis_d(direction = 1) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+@
+
+\caption{Limiting marginal posterior distribution of power parameter $\alpha$
+  based on $\alpha \sim \Be(1, 1)$ prior and when the current standard error
+  goes to zero ($\sigma \downarrow 0$), for different values of the parameter
+  difference standardized by the historical standard error
+  $|\that- \that_0|/\sigma_0$.}
+  \label{fig:limitingpost}
+\end{figure}
+Figure~\ref{fig:limitingpost} shows the distribution~\eqref{eq:limitpostnormal2} for
+different values of $|\that-\that_0|/\sigma_0$. One can see that
+when the parameter estimates become more different (larger $|\that_0 -\that|$)
+the limiting distribution~\eqref{eq:limitpostnormal2}
+will be increasingly shifted towards smaller values of $\alpha$ indicating more
+incompatibility among the data sets. This shift is amplified by decreasing
+historical standard errors $\sigma_0$, meaning that the posterior can become arbitrarily peaked by
+increasing the sample size of the historical study. In contrast, when the parameter estimates are
+the same ($\that = \that_0$) the historical standard error $\sigma_0$ does not influence
+the posterior. Since the limiting marginal posterior for $\alpha$ can in the best case be a
+$\Be(p + 1/2, q)$, this implies that a complete pooling of historical and current data
+($\alpha = 1$) can never be achieved. However, the fact that conflict between the
+current and historical data can make the marginal posterior
+arbitrarily peaked at $\alpha = 0$ implies that at least a complete discounting
+($\alpha = 0$) is possible.
+%assuming the initial prior for the parameter $\theta$ is proper.
+
+
+\section{Binomial model}
+We will now show that the previous result holds also approximately for binary data. Let $D = \{x, n\}$
+and $D_0 = \{x_0, n_0\}$ denote the number of successes and number of total trials from
+a current data and a historical data set, respectively. For each of them, assume a
+binomial likelihood
+% $X \given \theta \sim \Bin(n, \theta)$
+with success probability $\theta$,
+and let $\hat{\theta} = x/n$ and $\hat{\theta}_0 = x_0/n_0$ denote the respective maximum
+likelihood estimates. Assigning an improper initial beta prior $\theta \sim \Be(0, 0)$
+for the success probability and a beta prior $\alpha \sim \Be(p, q)$ for the power parameter
+leads to the normalized power prior
+\begin{align}
+  \label{eq:priorbin}
+  f(\theta, \alpha \given D_0)
+  &= \Be\{\theta \given \alpha \,n_0 \,\that_0, \alpha \,n_0 (1 - \that_0)\}
+  \Be(\alpha \given p, q).
+\end{align}
+
+% Updating of an initial beta prior $\theta \sim \Be(s, t)$ with the likelihood of the
+% historical data raised to the power of $\alpha$ leads again to a Beta distribution
+% \begin{align*}
+%   \theta \given x_0, \alpha &\sim \Be(\alpha x_0 + s, \alpha (n_0 - x_0) + t).
+% \end{align*}
+% Assigning a beta prior to the power parameter
+% $\alpha \sim \Be(p, q)$ results then in the normalized power prior \citep{Duan2005, Neuenschwander2009}
+% with density
+% \begin{align}
+%   \label{eq:priorbin}
+%   f(\theta, \alpha \given x_0)
+%   &= \Be(\theta \given \alpha x_0 + s, \alpha (n_0 - x_0) + t)
+%   \Be(\alpha \given p, q)
+% \end{align}
+% where $\Be(\cdot \given p, q)$ denotes the beta density function with parameter $p$ and $q$.
+
+Combining the prior~\eqref{eq:priorbin} with the likelihood of the current data leads to
+a joint posterior distribution for $\theta$ and $\alpha$, from which a marginal posterior
+for $\alpha$ can be obtained by integrating out $\theta$, \ie{}
+% \begin{align}
+%   \label{eq:postbin}
+%   f(\theta, \alpha \given x, x_0)
+%   &= \frac{\Bin(x \given n, \theta) \Be(\theta \given \alpha x_0 + s,
+%   \alpha (n_0 - x_0) + t) \Be(\alpha \given p, q)}{\int_0^1
+%   \BetaBin(x \given n, \alpha^\prime x_0 + s, \alpha^\prime (n_0 - x_0) + t)
+%   \Be(\alpha^\prime \given p, q)\, \text{d}\alpha^\prime},
+% \end{align}
+% with $\Bin(\cdot \given n, \theta)$ the binomial probability mass function
+% and $\BetaBin(\cdot \given n, p, q)$ the Beta-binomial probability mass function. Integrating
+% out $\theta$ from~\eqref{eq:postbin} results in the marginal posterior density
+\begin{align}
+  \label{eq:margpostalpha}
+  f(\alpha \given D, D_0)
+  = \frac{\BetaBin\{x \given n, \alpha \,n_0 \,\that_0, \alpha \,n_0 (1 - \that_0)\}
+  \Be(\alpha \given p, q)}{\int_0^1
+  \BetaBin\{x \given n, \alpha^\prime \,n_0 \,\that_0, \alpha^\prime \,n_0 (1 - \that_0)\}
+  \Be(\alpha^\prime \given p, q)\, \text{d}\alpha^\prime}
+\end{align}
+with $\Bin(\cdot \given n, \theta)$ the binomial probability mass function
+and $\BetaBin(\cdot \given n, p, q)$ the Beta-binomial probability mass function.
+
+As for the normal model, the integral in the denominator of~\eqref{eq:margpostalpha}
+is generally not  available in closed form. Yet again, it is possible to obtain
+a closed form expression when the probability estimates from both studies are equivalent
+($\hat{\theta} = \hat{\theta}_0$). Application of Stirling's approximation
+$\Be(x, y) \approx \sqrt{2\pi} x^{x-1/2}y^{y-1/2}(x + y)^{-(x+y-1/2)}$
+to both beta functions in the probability mass function of the beta-binomial
+leads then to
+\begin{align}
+     \label{eq:betaratio}
+     \BetaBin\{x \given n, \alpha \,n_0 \,\that, \alpha \,n_0 (1 - \that)\}
+  &\approx \binom{n}{x} \, \that^{\that n} (1 - \that)^{\that n}
+  \sqrt{\frac{\alpha n_0}{n + \alpha n_0}}.
+\end{align}
+Using the approximation~\eqref{eq:betaratio} in numerator and denominator
+of~\eqref{eq:margpostalpha}  produces the same expression~\eqref{eq:limitpost1}
+as for normal data but with with $c = n/n_0$.
+
+% Marginal posterior when perfectly compatible data ($\that = x/n = x_0/n_0$)
+% \begin{align}
+% \label{eq:margpostalpha}
+%   f(\theta \given x/n = x_0/n_0)
+%   = \frac{R(\that, n, n_0, \alpha, p, q)
+%   \Be(\alpha \given, y, z)}{\int_0^1 R(\that, n, n_0, \alpha^\prime, p, q)  \Be(\alpha \given, y, z)
+%   \text{d}\alpha^\prime}
+% \end{align}
+% with
+% \begin{align}
+%      \label{eq:betaratio}
+%      R(\that, n, n_0, \alpha, p, q)
+%      = \frac{\Be\{\that(n + \alpha n_0 + p), (1 - \that)(n + \alpha n_0 +
+%   q)\}}{\Be\{\that(\alpha n_0 + p), (1 - \that)(\alpha n_0 + q)\}}
+% \end{align}
+% a ratio of beta functions obtained from integrating $\theta$ out of
+% the joint posterior.
+% Assuming $p = q$ and applying Stirling's approximation
+% $\Be(x, y) \approx \sqrt{2\pi} x^{x-1/2}y^{y-1/2}(x + y)^{-(x+y-1/2)}$
+% to both beta functions in~\eqref{eq:betaratio} produces
+% \begin{align*}
+%     \frac{\Be\{\that(n + \alpha n_0 + p), (1 - \that)(n + \alpha n_0 +
+%   q)\}}{\Be\{\that(\alpha n_0 + p), (1 - \that)(\alpha n_0 + q)\}}
+%   &\approx \that^{\that n} (1 - \that)^{\that n}
+%   \sqrt{\frac{\alpha n_0 + p}{n + \alpha n_0 + p}}.
+% \end{align*}
+% Assuming that $p$ is smaller than $n$ and applying the approximation to
+% both numerator and denominator of~\eqref{eq:margpostalpha} leads to
+% the same expression as for normal data
+% \begin{align}
+% \label{eq:margpostalpha2}
+%   f(\theta \given x/n = x_0/n_0)
+%   &= \frac{(1/c + 1/\alpha)^{-1/2}\Be(\alpha \given, y, z)
+%   }{\int_0^1 (1/c + 1/\alpha)^{-1/2} \Be(\alpha \given, y, z)
+%   \text{d}\alpha^\prime} \\
+%     &= \frac{\left(1/c + 1/\alpha\right)^{-1/2} \alpha^{y-1} (1 -\alpha)^{z-1}}{
+%     {}_2F_1(1/2, x + 1/2, x + y + 1/2; -1/c)  \mbox{B}(y + 1/2, z)}
+% \end{align}
+% with $c = n/n_0$.
+
+\begin{figure}[!htb]
+<< "figure-binomial", fig.height = 3.5 >>=
+## ## Data as in Gravestock and Held (2017)
+## ## -----------------------------------------------------------------------------
+## ## Wunderink (2003): All cause mortality
+## x <- 61
+## n <- 302
+## ## Rubinstein (2001): All cause mortality
+## x0 <- 49
+## n0 <- 193
+## ## Wunderink (2003): Clinical cure
+## x <- 62
+## n <- 91
+## ## Rubinstein (2001): Clinical cure
+## x0 <- 111
+## n0 <- 171
+## ## Data as in Neuenschwander et al. (2009)
+## ## -----------------------------------------------------------------------------
+## ## Scenario 3
+## x <- 20
+## n <- 100
+## x0 <- 20
+## n0 <- 100
+
+## probability mass function of the beta-binomial distribution
+dbetabinom <- function(x, n, a, b) {
+    exp(lchoose(n = n, k = x) + lbeta(a + x, b + n - x) - lbeta(a, b))
+}
+
+## marginal posterior density of power parameter alpha for binomial model
+## for initial alpha ~ Beta(p, q) prior, and initial prob ~ Beta(0, 0)
+alphaMarginal_ <- function(alpha, x, n, x0, n0, p, q) {
+    intFun <- function(alpha) {
+        dbetabinom(x = x, n = n, a = alpha * x0, b = alpha * (n0 - x0)) *
+            stats::dbeta(x = alpha, shape1 = p, shape2 = q)
+    }
+    normConst <- integrate(f = intFun, lower = 0, upper = 1)$value
+    dens <- intFun(alpha = alpha) / normConst
+}
+alphaMarginal <- Vectorize(FUN = alphaMarginal_)
+aseq <- seq(from = 0, to = 1, length.out = 1000)
+p <- 1
+q <- 1
+densityObserved <- alphaMarginal(alpha = aseq, x = x, n = n, x0 = x0, n0 = n0,
+                                 p = q, q = q)
+type1 <- "observed"
+type2 <- "best-case"
+plotDFobserved <- data.frame(alpha = aseq, density = densityObserved,
+                             type = type1)
+
+## compute marginal posterior density for perfectly mirroring current data
+## with different c = n/n0
+p <- 1
+q <- 1
+aseq <- seq(from = 0, to = 1, length.out = 1000)
+cseq <- c(1, 2, 5)
+plotDF <- do.call("rbind", lapply(X = cseq, FUN = function(c) {
+    x <- x0*c
+    n <- n0*c
+    data.frame(alpha = aseq, c = c,
+               density = alphaMarginal(alpha = aseq, x = x, n = n, x0 = x0,
+                                       n0 = n0, p = q, q = q),
+               type = type2)
+}))
+plotDF <- rbind(plotDF,
+                data.frame(alpha = aseq, c = Inf,
+                         density = dbeta(x = aseq, shape1 = p + 0.5, shape2 = q),
+                         type = type2))
+plotDF$cFormat <- factor(x = plotDF$c, levels = c(cseq, Inf),
+                         labels = c(as.character(cseq), "infinity"))
+
+## create plot
+ltys <- c(1, 2)
+names(ltys) <- c(type1, type2)
+ggplot(data = plotDF, aes(x = alpha, y = density, color = cFormat, linetype = type)) +
+    geom_line(alpha = 0.9) +
+    geom_line(data = plotDFobserved, col = 1, alpha = 0.9) +
+    labs(x = bquote("Power parameter" ~ alpha), y = "Marginal posterior density",
+         color = bquote(italic(c) == frac(italic(n), italic(n)["0"])),
+         linetype = NULL) +
+    scale_color_viridis_d(option = "C", labels = scales::parse_format()) +
+    scale_linetype_manual(values = ltys) +
+    guides(colour = guide_legend(reverse = TRUE, override.aes = list(linetype = 2))) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+
+c <- n/n0
+@
+\caption{Marginal posterior of power parameter $\alpha$ for binomial data and
+  based on $\alpha \sim \Be(\Sexpr{p}, \Sexpr{q})$ prior. The dashed lines show
+  the marginal posterior for the historical data
+  $D_{0} = \{x_{0} = \Sexpr{x0}, n_{0} = \Sexpr{n0}\}$ from \citet{Louie2011}
+  and hypothetical current data $D = \{x = c \times x_{0}, n = c \times n_{0}\}$
+  mirroring original data but with relative sample sizes $c = n/n_{0}$. The
+  black solid line shows the posterior for the actually observed current data
+  $D = \{x = \Sexpr{x}, n = \Sexpr{n}\}$ from \citet{Cornely2012} computed by
+  numerical integration.}
+
+\end{figure}
+
+
+\section{Discussion}
+We showed that power priors in normal and binomial models combined with beta priors
+assigned to the power parameter $\alpha$ have undesirable and counterintuitive properties.
+Specifically, in the best-case scenario when the current data perfectly mirror the
+historical data and the sample sizes from both data  sets become arbitrarily large,
+the marginal posterior of $\alpha$ does not converge to a point mass at $\alpha = 1$
+but approaches a $\alpha \sim \Be(p + 1/2, q)$ distribution, hardly differing from
+the prior $\alpha \sim \Be(p, q)$.
+The result implies that a complete pooling of historical and current data can never
+be achieved. This drawback of the power prior is not only mathematical curiosity %trivia
+but a real concern in statistical modeling of medical data as illustrated by the
+case studies from \citet{Louie2011} and \citet{Cornely2012}.
+
+
+Uninformative priors, such as the typically assigned uniform $\alpha \sim \Be(1, 1)$,
+hence very much limit the amount of possible borrowing since the resulting best-case
+posterior still gives substantial mass to small values of $\alpha$.
+% The good news is that in case there is conflict between
+% the data sets, the marginal posterior of $\alpha$ can become arbitrarily peaked at $\alpha = 0$,
+% implying
+% The power prior framework is used in various critical applications of Bayesian statistics,
+% \eg{} clinical trials or environmental science \citep{Ibrahim2015}.
+% It is important that the identified limitations are kept in mind. The amount of possible
+% borrowing is predetermined by the prior on the power parameter.
+Data analysts who want to enable strong borrowing thus need to specify informative priors
+that give more mass to larger values of $\alpha$. A pragmatic alternative is to
+specify $\alpha$ via an empirical Bayes approach as proposed by \citet{Gravestock2017},
+which permits complete pooling of both data sets.
+
+We only studied the limiting marginal posterior of $\alpha$ in the normal and
+binomial models combined with beta priors on $\alpha$, yet we conjecture that the issue
+is more fundamental and also present in other types of models. However, this will likely be
+more difficult to establish as marginal posteriors are typically not available in closed form
+for more complex models.
+
+For the normal model, there is an exact correspondence between power parameter models
+with fixed $\alpha$ and hierarchical (random-effects meta-analysis) models with fixed
+heterogeneity variance \citep{Chen2006}. This connection may provide an intuition for why
+the counterintutive result occurs: Precisely estimating a heterogeneity variance from two
+observations alone (the historical and current data sets) seems like an impossible task as
+the ``unit of information'' is the number of data sets and not the number of samples
+within a data set. We will report in a future study about the precise connection between power
+parameter and hierarchical models when power parameter and the heterogeneity variance are random.
+
+
+\bibliographystyle{apalikedoiurl}
+\bibliography{bibliography.bib}
+
+<< "sessionInfo", echo = Reproducibility, results = Reproducibility >>=
+## print R sessionInfo to see system information and package versions
+## used to compile the manuscript
+sessionInfo()
+@
+
+\end{document}
