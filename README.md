@@ -7,8 +7,7 @@ This repository accompanies the preprint [Pawel et al.
 
 We provide two ways to reproduce the manuscript
 
-1. *Reproduction with locally installed computational environment* (requires a
-local installation of R and LaTeX)
+### 1. Reproduction with locally installed computational environment (requires R and LaTeX)
 
 Install first the required R packages by running in a shell from the root
 directory of the repository
@@ -24,11 +23,11 @@ cd paper
 make pdf
 ```
 
-this reproduces all analyses and outputs the file `pppooling.pdf` in the paper
-directory. The R and package versions which we used can be seen in the output of
-the sessionInfo command at the bottom of the manuscript.
+this reproduces all analyses and should outputs the file `pppooling.pdf` in the
+paper directory. The R and package versions which we used can be seen in the
+output of the sessionInfo command at the bottom of the manuscript.
 
-2. *Reproduction within Docker container* (requires Docker with root rights)
+### 2. Reproduction within Docker container (requires Docker with root rights)
 
 Run in a shell from the root directory of the repository
 
@@ -36,10 +35,10 @@ Run in a shell from the root directory of the repository
 make drunpdf
 ```
 
-which outputs the file `pppooling.pdf` in the paper directory. This takes a bit
-longer but reruns our analyses in a Docker container which encapsulates the
-computational environment (R and R versions) that was used in the original
-analysis.
+which should output the file `pppooling.pdf` in the paper directory. This takes
+a bit longer but reruns our analyses in a Docker container which encapsulates
+the computational environment (R and R package versions) that was used in the
+original analysis.
 
 ## References
 
