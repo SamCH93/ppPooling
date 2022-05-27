@@ -1,9 +1,9 @@
-# Complete Pooling is Impossible with Normalized Power Priors
+# Normalized power priors always discount
 
 This repository contains code and data related to the preprint
 
-Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2022). Complete Pooling
-is Impossible with Normalized Power Priors. to appear soon on arXiv.
+Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2022). Normalized power priors always 
+discount. To appear on arXiv soon.
 [10.48550/arXiv.XXXX.XXXXX](https://doi.org/10.48550/arXiv.XXXX.XXXXX)
 
 ## Reproducing the results
