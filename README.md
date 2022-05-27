@@ -1,9 +1,9 @@
-# Normalized power priors always discount
+# Normalized power priors always discount historical data
 
 This repository contains code and data related to the preprint
 
-Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2022). Normalized power priors always 
-discount. To appear on arXiv soon.
+Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2022). Normalized power
+priors always discount historical data. To appear on arXiv soon.
 [10.48550/arXiv.XXXX.XXXXX](https://doi.org/10.48550/arXiv.XXXX.XXXXX)
 
 ## Reproducing the results
