@@ -540,20 +540,20 @@ and current data can never be achieved. On the other hand, a complete
 discounting is possible since conflict between the current and historical data
 can make the marginal posterior arbitrarily peaked at $\alpha = 0$. However,
 considering that the distribution~\eqref{eq:limitpostnormal2} is based on an
-extremely precise current data set that estimates that unknown parameter
-$\theta$ without any measurement error, the rate at which the posterior becomes
-more concentrated seems also dissatisfactory. For instance, for a standardized
-parameter difference $|\that- \that_0|/\sigma_0 = 3$, the posterior is only
-slightly peaked at around $\alpha = 0.1$.
+extremely informative current data set which lead to an estimate of the unknown
+parameter $\theta$ without any measurement error, the rate at which the
+posterior becomes more concentrated seems also dissatisfactory. For instance,
+for a standardized parameter difference $|\that- \that_0|/\sigma_0 = 3$, the
+posterior is only slightly peaked at around $\alpha = 0.1$.
 
 \section{Binomial model}
 \label{sec:binomial}
 So far we assumed normal likelihood and a univariate parameter,
 Appendix~\ref{app:normallinear} shows that the previous result can be
 generalized to normal linear models with multivariate parameter $\theta$. In
-this section, we will briefly show that the previous result also holds
-approximately in the binomial model, which is an important model class in
-medical applications of power priors.
+this section, we will show that the previous result also holds approximately in
+the binomial model, which is an important model class in medical applications of
+power priors.
 
 Let $D = \{x, n\}$ and $D_0 = \{x_0, n_0\}$ denote the number of successes and
 total trials from current data and historical data set, respectively. Assume a
@@ -725,8 +725,8 @@ prior permits in that case.
 
 \section{Discussion}
 \label{sec:discussion}
-We showed that power priors in normal and binomial models combined with beta
-priors assigned to the power parameter $\alpha$ have undesirable and
+We showed that normalized power priors in normal and binomial models combined
+with beta priors assigned to the power parameter $\alpha$ have undesirable and
 counterintuitive properties. Specifically, in the best-case scenario when the
 current data perfectly mirror the historical data and the sample sizes from both
 data sets become arbitrarily large, the marginal posterior of $\alpha$ does not
