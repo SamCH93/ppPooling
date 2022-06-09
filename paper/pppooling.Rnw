@@ -1,11 +1,9 @@
 %% Template for a scientific paper by Samuel Pawel
-%% Last modification: 17. December 2020
 \documentclass[a4paper, 11pt]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{graphics}
-\usepackage[dvipsnames]{xcolor}
 \usepackage{amsmath, amssymb}
 \usepackage{doi} % automatic doi-links
 \usepackage[round]{natbib} % bibliography
@@ -14,16 +12,8 @@
 \usepackage{nameref} % reference appendices with names
 \usepackage[onehalfspacing]{setspace} % more space
 \usepackage[labelfont=bf,font=small]{caption} % smaller captions
-\usepackage{todonotes}
 \usepackage{array}
-\newcommand{\EJ}[1]{\todo[inline, color=green]{  #1 }}
-\newcommand{\Samuel}[1]{\todo[inline, color=white]{Samuel:  #1 }}
 
-
-% \usepackage{mathpazo}
-% \usepackage[semibold]{sourcesanspro}
-% \usepackage{sectsty}
-% \allsectionsfont{\sffamily}
 
 %% margins
 %% ----------------------------------------------------------------------------
@@ -42,10 +32,10 @@
 \newcommand\longtitle{Normalized power priors always discount historical data}
 \newcommand\shorttitle{Normalized power priors always discount} % if longtitle too long, change here
 \newcommand\subtitle{}
-\newcommand\longauthors{Samuel Pawel\textsuperscript{*}, Frederik Aust\textsuperscript{$\dagger$}, Leonhard Held\textsuperscript{*}, Eric-Jan Wagenmakers\textsuperscript{$\dagger$}}
+\newcommand\longauthors{Samuel Pawel\textsuperscript{$\star$}, Frederik Aust\textsuperscript{$\dagger$}, Leonhard Held\textsuperscript{$\star$}, Eric-Jan Wagenmakers\textsuperscript{$\dagger$}}
 \newcommand\shortauthors{S. Pawel, F. Aust, L. Held, E.-J. Wagenmakers} % if longauthors too long, change here
 \newcommand\affiliation{
-  * Department of Biostatistics, University of Zurich \\
+  $\star$ Department of Biostatistics, University of Zurich \\
   $\dagger$ Department of Psychological Methods, University of Amsterdam
 }
 \newcommand\mail{samuel.pawel@uzh.ch}
@@ -59,7 +49,8 @@
   \affiliation \\
   E-mail: \href{mailto:\mail}{\mail}
 }
-\date{\today} %don't forget to hard-code date when submitting to arXiv!
+%\date{\today} %don't forget to hard-code date when submitting to arXiv!
+\date{June 9, 2022}
 
 %% hyperref options
 %% ----------------------------------------------------------------------------
@@ -72,9 +63,9 @@
   pdfsubject={},
   pdfkeywords={},
   colorlinks=true,
-  linkcolor=RoyalPurple,
+  linkcolor=blue,
   anchorcolor=black,
-  citecolor=MidnightBlue,
+  citecolor=blue,
   urlcolor=black,
 }
 
@@ -164,7 +155,7 @@ the model parameters $\theta$ based on the current data $D$ and the historical
 data $D_0$ is given by
 \begin{align*}
     f(\theta \given D, D_0) = \int_0^1 f(\theta \given D, D_0, \alpha)  f(\alpha \given D, D_0)
-     \text{d}\alpha,
+    \, \text{d}\alpha,
 \end{align*}
 that is, the posterior of $\theta$ based on a fixed $\alpha$ averaged over the
 marginal posterior of $\alpha$. The marginal posterior of $\alpha$ thus
@@ -174,14 +165,14 @@ $\alpha = 1$.
 
 Standard Bayesian asymptotic theory establishes that under certain regularity
 conditions posterior distributions become more concentrated with increasing
-amounts of data. Intuition would thus suggest that the marginal posterior of
-$\alpha$ should become increasingly concentrated at $\alpha = 1$ when there is
-no conflict between the data sets, and their sample size increases. Here, we
-show that this is not the case, at least not in the typical situation when
-$\alpha$ is assigned a beta prior distribution and the data have normal or
-binomial likelihood. Instead, there is is a limiting posterior distribution
-which is hardly different from the prior, implying that a complete pooling is
-impossible.
+amounts of data \citep[section 6.6]{Held2020d}. Intuition would thus suggest
+that the marginal posterior of $\alpha$ should become increasingly concentrated
+at $\alpha = 1$ when there is no conflict between the data sets, and their
+sample size increases. Here, we show that this is not the case, at least not in
+the typical situation when $\alpha$ is assigned a beta prior distribution and
+the data have normal or binomial likelihood. Instead, there is is a limiting
+posterior distribution which is hardly different from the prior, implying that a
+complete pooling is impossible.
 
 This paper is structured as follows: We start by showing the claimed result for
 parameter estimates under normality (Section~\ref{sec:normal}). We then show
@@ -734,8 +725,8 @@ converge to a point mass at $\alpha = 1$ but approaches a
 $\alpha \sim \Be(p + 1/2, q)$ distribution, hardly differing from the prior
 $\alpha \sim \Be(p, q)$. The result implies that a complete pooling of
 historical and current data can never be achieved. Our case study illustrates
-that the property is not only a mathematical curiosity %trivia
-but can occur in statistical analysis of medical data.
+that the property is not only a mathematical curiosity but can occur in
+statistical analysis of medical data.
 
 We still believe that normalized power priors are useful since they permit
 arbitrarily large data-driven discounting of historical data. However, data
@@ -840,7 +831,7 @@ and $\hat{\thetab}_0$.
 << "sessionInfo1", eval = Reproducibility, results = "asis" >>=
 ## print R sessionInfo to see system information and package versions
 ## used to compile the manuscript (set Reproducibility = FALSE, to not do that)
-cat("\\section*{Computational details}")
+cat("\\newpage \\section*{Computational details}")
 @
 << "sessionInfo2", echo = Reproducibility, results = Reproducibility >>=
 sessionInfo()
