@@ -40,4 +40,5 @@ vignettes/*.pdf
 
 # folders
 coverletter/
+submission/
 .auctex-auto/

@@ -760,13 +760,14 @@ heterogeneity variance are random.
 
 
 \section*{Software and data}
-All analyses were conducted in the R programming language version
-\Sexpr{paste(version$major, version$minor, sep = ".")} \citep{R}. The packages
-\texttt{ggplot2} \citep{Wickham2016} and \texttt{hypergeo} \citep{Hankin2016}
-were used used for graphics and (confluent) hypergeometric function
-implementation, respectively. The code to reproduce our analyses is available at
-\url{https://github.com/SamCH93/ppPooling}. A snapshot of the GitHub repository
-at the time of writing is available at
+The summary data used in this study were extracted from Figure~5.1 in
+\citet{Nelson2017}. All analyses were conducted in the R programming language
+version \Sexpr{paste(version$major, version$minor, sep = ".")} \citep{R}. The
+packages \texttt{ggplot2} \citep{Wickham2016} and \texttt{hypergeo}
+\citep{Hankin2016} were used used for graphics and (confluent) hypergeometric
+function implementation, respectively. The code and data to reproduce our
+analyses is openly available at \url{https://github.com/SamCH93/ppPooling}. A
+snapshot of the GitHub repository at the time of writing is available at
 \url{https://doi.org/10.5281/zenodo.6626963}.
 
 \section*{Acknowledgments}
