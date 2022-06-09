@@ -767,7 +767,7 @@ were used used for graphics and (confluent) hypergeometric function
 implementation, respectively. The code to reproduce our analyses is available at
 \url{https://github.com/SamCH93/ppPooling}. A snapshot of the GitHub repository
 at the time of writing is available at
-\url{https://doi.org/10.5281/zenodo.XXXXX}.
+\url{https://doi.org/10.5281/zenodo.6626963}.
 
 \section*{Acknowledgments}
 This work was supported in part by an NWO Vici grant (016.Vici.170.083) to EJW,
