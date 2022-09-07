@@ -117,7 +117,7 @@ library(hypergeo) # confluent hypergeometric function
         power parameter $\alpha$ is typically unknown and assigned a prior
         distribution, most commonly a beta distribution. Here, we give a novel
         theoretical result on the resulting marginal posterior distribution of
-        $\alpha$ in case of the the normal and binomial model.
+        $\alpha$ in case of the normal and binomial model.
         Counterintuitively, when the current data perfectly mirror the
         historical data and the sample sizes from both data sets become
         arbitrarily large, the marginal posterior of $\alpha$ does not converge
@@ -276,7 +276,7 @@ $\alpha$ can be obtained by integrating out $\theta$, \ie{}
 \end{align}
 
 The black solid lines in Figure~\ref{fig:analysis} show the marginal posterior
-distributions of the power parameter $\alpha$ (left) and the the log risk ratio
+distributions of the power parameter $\alpha$ (left) and the log risk ratio
 $\theta$ (right) based on a uniform $\alpha \sim \Be(1, 1)$ prior for the power
 parameter and the data from Table~\ref{tab:data}; the log risk ratio with
 standard error from the current data $D = \{\that = 0.15, \sigma = 0.06\}$, and
