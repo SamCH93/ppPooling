@@ -23,8 +23,8 @@
   total={170mm,257mm},
   left=25mm,
   right=25mm,
-  top=20mm,
-  bottom=20mm,
+  top=30mm,
+  bottom=25mm,
 }
 
 %% title, authors, affiliations, mail
@@ -50,7 +50,7 @@
   E-mail: \href{mailto:\mail}{\mail}
 }
 %\date{\today} %don't forget to hard-code date when submitting to arXiv!
-\date{June 9, 2022}
+\date{February 20, 2023}
 
 %% hyperref options
 %% ----------------------------------------------------------------------------
@@ -117,14 +117,13 @@ library(hypergeo) # confluent hypergeometric function
         power parameter $\alpha$ is typically unknown and assigned a prior
         distribution, most commonly a beta distribution. Here, we give a novel
         theoretical result on the resulting marginal posterior distribution of
-        $\alpha$ in case of the normal and binomial model.
-        Counterintuitively, when the current data perfectly mirror the
-        historical data and the sample sizes from both data sets become
-        arbitrarily large, the marginal posterior of $\alpha$ does not converge
-        to a point mass at $\alpha = 1$ but approaches a distribution that
-        hardly differs from the prior. The result implies that a complete
-        pooling of historical and current data is impossible if a power prior
-        with beta prior for $\alpha$ is used.}
+        $\alpha$ in case of the normal and binomial model. Counterintuitively,
+        when the current data perfectly mirror the historical data and the
+        sample sizes from both data sets become arbitrarily large, the marginal
+        posterior of $\alpha$ does not converge to a point mass at $\alpha = 1$
+        but approaches a distribution that hardly differs from the prior. The
+        result implies that a complete pooling of historical and current data is
+        impossible if a power prior with beta prior for $\alpha$ is used.}
       \rule{\textwidth}{0.4pt} \\
       \textit{Keywords}: Bayesian statistics, borrowing, clinical trials,
       historical data, pooling}
@@ -154,8 +153,8 @@ assigned a prior distribution. In this case, the marginal posterior density of
 the model parameters $\theta$ based on the current data $D$ and the historical
 data $D_0$ is given by
 \begin{align*}
-    f(\theta \given D, D_0) = \int_0^1 f(\theta \given D, D_0, \alpha)  f(\alpha \given D, D_0)
-    \, \text{d}\alpha,
+    \pi(\theta \given D, D_0) = \int_0^1 \pi(\theta \given D, D_0, \alpha)  \pi(\alpha \given D, D_0)
+     \text{d}\alpha,
 \end{align*}
 that is, the posterior of $\theta$ based on a fixed $\alpha$ averaged over the
 marginal posterior of $\alpha$. The marginal posterior of $\alpha$ thus
@@ -163,16 +162,18 @@ determines how much pooling between the two data sets occurs, and a complete
 pooling of both data sets happens when the posterior has all its mass at
 $\alpha = 1$.
 
-Standard Bayesian asymptotic theory establishes that under certain regularity
-conditions posterior distributions become more concentrated with increasing
-amounts of data \citep[section 6.6]{Held2020d}. Intuition would thus suggest
-that the marginal posterior of $\alpha$ should become increasingly concentrated
-at $\alpha = 1$ when there is no conflict between the data sets, and their
-sample size increases. Here, we show that this is not the case, at least not in
-the typical situation when $\alpha$ is assigned a beta prior distribution and
-the data have normal or binomial likelihood. Instead, there is is a limiting
-posterior distribution which is hardly different from the prior, implying that a
-complete pooling is impossible.
+Standard Bayesian asymptotic theory establishes that, under certain regularity
+conditions, posterior distributions become more concentrated with increasing
+amounts of data \citep[section 6.6]{Held2020d}. Since the power prior is a prior
+based on the historical data, intuition would suggest that as the sample sizes
+of the current and historical data sets increase, the marginal posterior of
+$\alpha$ should become increasingly concentrated at $\alpha = 0$ if there is
+conflict between the data sets, and increasingly concentrated at $\alpha = 1$ if
+there is no conflict. Here, we show that only the former is true, but not the
+latter, at least in the typical situation where $\alpha$ has a beta prior
+distribution and the data have normal or binomial likelihood. Instead, there is
+a limiting posterior distribution that is hardly different from the prior, which
+implies that a complete pooling is impossible.
 
 This paper is structured as follows: We start by showing the claimed result for
 parameter estimates under normality (Section~\ref{sec:normal}). We then show
@@ -247,30 +248,46 @@ rrci0Format <- paste0("(", paste0(round(rrci0, 2), collapse = ", "), ")")
 Define the current data set by $D = \{\that, \sigma\}$ with $\that$ an estimate
 of an unknown univariate parameter $\theta$ and $\sigma$ the (assumed to be
 known) standard error of the estimate. Denote by $D_0 = \{\that_0, \sigma_0\}$
-the respective quantities obtained from the historical data. For both estimates,
-assume a normal likelihood centered around the parameter $\theta$ and with
-variance equal to the squared standard error. In the default ``normalized''
-version of the power prior \citep{Duan2005, Neuenschwander2009} the prior for
-the power parameter $\alpha$ is assigned marginally to the posterior
-distribution of $\theta$ based on an initial prior for $\theta$ and the
-likelihood of the historical data $D_0$ raised to the power of $\alpha$. Here
-and henceforth we will use an initial uniform prior for the parameter
-$f(\theta) \propto 1$ and a beta prior for the power parameter
+the respective quantities obtained from the historical data. The standard errors
+are usually of the form $\sigma = \kappa/\sqrt{n}$ and
+$\sigma_{0} = \kappa/\sqrt{n_{o}}$, where $n$ and $n_{0}$ are effective sample
+sizes and $\kappa^{2}$ is the variance of one unit. The relative variance
+$c = \sigma^{2}_{0}/\sigma^{2} = n/n_{0}$ can then be interpreted as a ratio of
+sample sizes. For both estimates, assume a normal likelihood centered around the
+parameter $\theta$ and with variance equal to the squared standard error. In the
+default ``normalized'' version of the power prior \citep{Duan2005,
+  Neuenschwander2009} the prior for the power parameter $\alpha$ is assigned
+marginally to the posterior distribution of $\theta$ based on an initial prior
+for $\theta$ and the likelihood of the historical data $D_0$ raised to the power
+of $\alpha$. Here and henceforth we will use an initial uniform prior for the
+parameter $\pi(\theta) \propto 1$ and a beta prior for the power parameter
 $\alpha \sim \Be(p, q)$. This choice leads to the normalized power prior
 \begin{align}
     \label{eq:nppnormal}
-    f(\theta, \alpha \given D_0)
+  \pi(\theta, \alpha \given D_0)
+  = \frac{L(D_{0} \given \theta)^{\alpha} \pi(\alpha)}{\int_{-\infty}^{+\infty} L(D_{0} \given \theta^{\prime})^{\alpha}  \text{d}\theta\prime}
     = \Nor(\theta\given \that_0, \sigma^2_0 /\alpha) \Be(\alpha \given p, q)
 \end{align}
 with $\Nor(\cdot \given m, v)$ the normal density function and
 $\Be(\cdot \given p, q)$ the beta density function.
 Combining~\eqref{eq:nppnormal} with the likelihood of the current data produces
-a joint posterior for $\theta$ and $\alpha$, from which a marginal posterior for
+a joint posterior for $\theta$ and $\alpha$, \ie{}
+\begin{align*}
+  \pi(\theta, \alpha \given D, D_0)
+  &= \frac{L(D \given \theta)  \pi(\theta, \alpha \given D_{0})}{\int_{0}^{1} \int_{-\infty}^{\infty}
+  L(D \given \theta^{\prime})  \pi(\theta^{\prime}, \alpha^{\prime} \given D_{0})
+  \text{d}\theta^\prime \text{d}\alpha^\prime}
+  = \frac{\Nor(\theta \given \theta, \sigma^{2}) \Nor(\theta \given \that_0, \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
+    \int_0^1 \Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha^\prime) \Be(\alpha^\prime \given p, q)
+    \text{d}\alpha^\prime},
+\end{align*}
+from which a marginal posterior for
 $\alpha$ can be obtained by integrating out $\theta$, \ie{}
 \begin{align}
     \label{eq:margpostnormal}
-    f(\alpha \given D, D_0)
-    = \frac{\Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
+    \pi(\alpha \given D, D_0)
+  = \int_{-\infty}^{+\infty} \pi(\theta, \alpha \given D, D_{0}) \text{d}\theta
+  = \frac{\Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
     \int_0^1 \Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha^\prime) \Be(\alpha^\prime \given p, q)
     \text{d}\alpha^\prime}.
 \end{align}
@@ -393,16 +410,16 @@ data in the sense that both parameter estimates are equivalent
 ($\that = \that_0$). In this case, several terms cancel
 in~\eqref{eq:margpostnormal} so that the integral can be represented in terms of
 the hypergeometric function
-${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mbox{B}(b, c - b)$
-with $\mbox{B}(x, y)$ the beta function \citep[chapter 15]{Abramowitz1964},
+\mbox{${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mbox{B}(b, c - b)$}
+with $\mbox{B}(x, y)$ the beta function \citep[chapter 15.3.1]{Abramowitz1964},
 \ie{}
 \begin{align}
     \label{eq:margpostsimilar}
-    f(\alpha \given D, D_0, \that = \that_0)
+    \pi(\alpha \given D, D_0, \that = \that_0)
     % &= \frac{(1/c + 1/\alpha)^{-1/2} \times \Be(\alpha\given p, q)}{
-    % \int_0^1 (1/c + 1/\alpha^\prime)^{-1/2} \times \Be(\alpha^\prime \given p, q)\,
+    % \int_0^1 (1/c + 1/\alpha^\prime)^{-1/2} \times \Be(\alpha^\prime \given p, q)
     % \text{d}\alpha^\prime} \\
-    &= \frac{(\alpha/c + 1)^{-1/2} \, \Be(\alpha \given p + 1/2, q)}{
+    &= \frac{(\alpha/c + 1)^{-1/2}  \Be(\alpha \given p + 1/2, q)}{
     {}_2F_1(1/2, p + 1/2, p + q + 1/2; -1/c)}.
 \end{align}
 where $c = \sigma^2_0/\sigma^2$ is the relative variance. The
@@ -422,7 +439,8 @@ behavior of~\eqref{eq:margpostsimilar} for $c \to \infty$, \ie{} the current
 standard error $\sigma$ goes to zero while the historical standard error
 $\sigma_0$ remains fixed, reflecting an arbitrary increase of the current sample
 size. In that case it is straightforward to see from the power series
-representation of the hypergeometric function that
+representation of the hypergeometric function \citep[chapter
+15.1.1]{Abramowitz1964} that
 \begin{align*}
     \lim_{c\to\infty} {}_2F_1(1/2, p + 1/2, p + q + 1/2; -1/c)
     &= \lim_{c\to\infty} 1 + \mathcal{O}(1/c)= 1.
@@ -430,7 +448,7 @@ representation of the hypergeometric function that
 Hence, the limiting posterior density is
 \begin{align}
     \label{eq:limitpostnormal1}
-    \lim_{c\to \infty} f(\alpha \given D, D_0, \that = \that_0)
+    \lim_{c\to \infty} \pi(\alpha \given D, D_0, \that = \that_0)
     &= \Be(\alpha \given p + 1/2, q),
 \end{align}
 that is, again a beta density but with updated success parameter $p + 1/2$, so
@@ -446,20 +464,21 @@ fixed (but in contrast to the previous situation the parameter estimates $\that$
 and $\that_0$ can take different values). In this case, the integral
 in~\eqref{eq:margpostnormal} can be represented by the confluent hypergeometric
 function
-$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \,\text{d}t\}/\mbox{B}(b - a, a)$
-\citep[chapter 13]{Abramowitz1964} so that the marginal posterior is given by
+$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \text{d}t\}/\mbox{B}(b - a, a)$
+\citep[chapter 13.2.1]{Abramowitz1964} so that the marginal posterior is given by
 \begin{align}
      \label{eq:limitpostnormal2}
-     \lim_{\sigma \downarrow 0} f(\alpha \given D, D_0)
+     \lim_{\sigma \downarrow 0} \pi(\alpha \given D, D_0)
      &=
-     \frac{\exp\left\{-\alpha \, (\that - \that_0)^2/(2\sigma^2_0)\right\}}{
+     \frac{\exp\left\{-\alpha  (\that - \that_0)^2/(2\sigma^2_0)\right\}}{
      M\{p + 1/2, p + q + 1/2, -(\that - \that_0)^2/(2\sigma^2_0)\}}
      \Be(\alpha \given p + 1/2, q).
 \end{align}
 As expected, the distribution~\eqref{eq:limitpostnormal2} reduces
 to~\eqref{eq:limitpostnormal1} when the parameter estimates are equal
 ($\that = \that_0$) since then the left fraction becomes one, which can be shown
-using the power series representation of the confluent hypergeometric function.
+using the power series representation of the confluent hypergeometric function
+\citep[chapter 13.1.2]{Abramowitz1964}.
 
 Figure~\ref{fig:limitingpost} shows the distribution~\eqref{eq:limitpostnormal2}
 for different values of the parameter estimate difference standardized by the
@@ -557,7 +576,7 @@ success probability and a beta prior $\alpha \sim \Be(p, q)$ for the power
 parameter leads to the normalized power prior
 \begin{align}
   \label{eq:priorbin}
-  f(\theta, \alpha \given D_0)
+  \pi(\theta, \alpha \given D_0)
   &= \Be\{\theta \given \alpha x_0, \alpha (n_0 - x_0)\}
   \Be(\alpha \given p, q).
 \end{align}
@@ -567,11 +586,11 @@ marginal posterior for $\alpha$ can be obtained by integrating out $\theta$,
 \ie{}
 \begin{align}
   \label{eq:margpostalpha}
-  f(\alpha \given D, D_0)
-  = \frac{\BetaBin\{x \given n, \alpha \, x_0, \alpha (n_0 - x_0)\}
+  \pi(\alpha \given D, D_0)
+  = \frac{\BetaBin\{x \given n, \alpha  x_0, \alpha (n_0 - x_0)\}
   \Be(\alpha \given p, q)}{\int_0^1
-  \BetaBin\{x \given n, \alpha^\prime \,  x_0, \alpha^\prime (n_0 - x_0)\}
-  \Be(\alpha^\prime \given p, q)\, \text{d}\alpha^\prime}
+  \BetaBin\{x \given n, \alpha^\prime   x_0, \alpha^\prime (n_0 - x_0)\}
+  \Be(\alpha^\prime \given p, q) \text{d}\alpha^\prime}
 \end{align}
 with $\Bin(\cdot \given n, \theta)$ the binomial probability mass function and
 $\BetaBin(\cdot \given n, p, q)$ the beta-binomial probability mass function.
@@ -586,8 +605,8 @@ beta functions in the probability mass function of the beta-binomial leads then
 to
 \begin{align}
      \label{eq:betaratio}
-     \BetaBin\{x \given n, \alpha \, x_0, \alpha (n_0 - x_0)\}
-  &\approx \binom{n}{x} \, \that^x (1 - \that)^{n - x}
+     \BetaBin\{x \given n, \alpha  x_0, \alpha (n_0 - x_0)\}
+  &\approx \binom{n}{x}  \that^x (1 - \that)^{n - x}
   \sqrt{\frac{\alpha n_0}{n + \alpha n_0}}.
 \end{align}
 Using the approximation~\eqref{eq:betaratio} in numerator and denominator
@@ -789,12 +808,12 @@ quantities from a historical data set. Finally, let
 $\hat{\thetab} = (\Xbt \Xb)^{-1} \Xbt \yb$ and
 $\hat{\thetab}_0 = (\Xbt_0 \Xb_0)^{-1} \Xbt_0 \yb_0$ denote the respective
 maximum likelihood estimates of $\thetab$. Based on a uniform initial prior
-$f(\thetab) \propto 1$ for the parameter vector and a beta prior
+$\pi(\thetab) \propto 1$ for the parameter vector and a beta prior
 $\alpha \sim \Be(p, q)$ for the power parameter, we obtain the normalized power
 prior
 \begin{align}
     \label{eq:npplinearmodel}
-    f(\thetab, \alpha \given D_0)
+    \pi(\thetab, \alpha \given D_0)
     &= \Nor_\text{k}\left(\thetab \given \hat{\thetab}_0, \sigma^2  \alpha^{-1}
     (\Xbt_0 \Xb_0)^{-1}\right) \Be(\alpha \given p, q)
 \end{align}
@@ -805,13 +824,13 @@ a joint posterior for $\thetab$ and $\alpha$, from which a marginal posterior
 for $\alpha$ can be obtained by integrating out $\thetab$, \ie{}
 \begin{align}
     \label{eq:postmarg}
-    f(\alpha \given D, D_0) =
+    \pi(\alpha \given D, D_0) =
     \frac{\Nor_\text{k}\left(\hat{\thetab} \given \hat{\thetab}_0, \sigma^2
     (\Xbt \Xb)^{-1} + \sigma^2  \alpha^{-1} (\Xbt_0 \Xb_0)^{-1}\right)
     \Be(\alpha \given p, q)}{\int_0^1
     \Nor_\text{k}\left(\hat{\thetab} \given \hat{\thetab}_0, \sigma^2
     (\Xbt \Xb)^{-1} + \sigma^2  {\alpha^\prime}^{-1}   (\Xbt_0 \Xb_0)^{-1}\right)
-    \Be(\alpha^\prime \given p, q) \, \text{d}\alpha^\prime}.
+    \Be(\alpha^\prime \given p, q)  \text{d}\alpha^\prime}.
 \end{align}
 When the current and historical data are perfectly compatible (characterized by
 equivalent maximum likelihood estimates $\hat{\thetab} = \hat{\thetab}_0$), the
@@ -835,6 +854,7 @@ and $\hat{\thetab}_0$.
 cat("\\newpage \\section*{Computational details}")
 @
 << "sessionInfo2", echo = Reproducibility, results = Reproducibility >>=
+cat(paste(Sys.time(), Sys.timezone(), "\n"))
 sessionInfo()
 @
 
