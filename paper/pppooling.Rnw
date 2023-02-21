@@ -164,16 +164,17 @@ $\alpha = 1$.
 
 Standard Bayesian asymptotic theory establishes that, under certain regularity
 conditions, posterior distributions become more concentrated with increasing
-amounts of data \citep[section 6.6]{Held2020d}. Since the power prior is a prior
-based on the historical data, intuition would suggest that as the sample sizes
-of the current and historical data sets increase, the marginal posterior of
-$\alpha$ should become increasingly concentrated at $\alpha = 0$ if there is
-conflict between the data sets, and increasingly concentrated at $\alpha = 1$ if
-there is no conflict. Here, we show that only the former is true, but not the
-latter, at least in the typical situation where $\alpha$ has a beta prior
-distribution and the data have normal or binomial likelihood. Instead, there is
-a limiting posterior distribution that is hardly different from the prior, which
-implies that a complete pooling is impossible.
+amounts of data \citep[section 6.6]{Held2020d}. Since the power prior is based
+on the historical data, intuition would suggest that as the sample sizes of the
+current and historical data sets increase, the marginal posterior of $\alpha$
+should become increasingly concentrated at $\alpha = 0$ if there is conflict
+between the data sets, and increasingly concentrated at $\alpha = 1$ if there is
+no conflict. Here, we show that only the former is true, but not the latter, at
+least in the typical situation where $\alpha$ has a beta prior distribution and
+the data have normal or binomial likelihood. In case of conflict, there is
+instead a limiting posterior distribution that is hardly different from the
+prior. Our results imply that complete discountig is possible, but complete
+pooling is impossible.
 
 This paper is structured as follows: We start by showing the claimed result for
 parameter estimates under normality (Section~\ref{sec:normal}). We then show
@@ -773,9 +774,9 @@ provide an intuition for why the counterintutive result occurs: Precisely
 estimating a heterogeneity variance from two observations alone (the historical
 and current data sets) seems like an impossible task as the ``unit of
 information'' is the number of data sets and not the number of samples within a
-data set. We will report in a future study about the precise connection between
-power parameter and hierarchical models when power parameter and the
-heterogeneity variance are random.
+data set. We report elsewhere on the precise connection between power parameter
+and hierarchical models when power parameter and the heterogeneity variance are
+random \citep{Pawel2022ppfrs}.
 
 
 \section*{Software and data}
