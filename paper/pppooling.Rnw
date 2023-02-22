@@ -266,7 +266,7 @@ $\alpha \sim \Be(p, q)$. This choice leads to the normalized power prior
 \begin{align}
     \label{eq:nppnormal}
   \pi(\theta, \alpha \given D_0)
-  = \frac{L(D_{0} \given \theta)^{\alpha} \pi(\alpha)}{\int_{-\infty}^{+\infty} L(D_{0} \given \theta^{\prime})^{\alpha}  \text{d}\theta\prime}
+  = \frac{L(D_{0} \given \theta)^{\alpha} \pi(\alpha)}{\int_{-\infty}^{+\infty} L(D_{0} \given \theta^{\prime})^{\alpha}  \text{d}\theta^{\prime}}
     = \Nor(\theta\given \that_0, \sigma^2_0 /\alpha) \Be(\alpha \given p, q)
 \end{align}
 with $\Nor(\cdot \given m, v)$ the normal density function and
@@ -411,8 +411,8 @@ data in the sense that both parameter estimates are equivalent
 ($\that = \that_0$). In this case, several terms cancel
 in~\eqref{eq:margpostnormal} so that the integral can be represented in terms of
 the hypergeometric function
-\mbox{${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mbox{B}(b, c - b)$}
-with $\mbox{B}(x, y)$ the beta function \citep[chapter 15.3.1]{Abramowitz1964},
+\mbox{${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mathrm{B}(b, c - b)$}
+with $\mathrm{B}(x, y)$ the beta function \citep[chapter 15.3.1]{Abramowitz1964},
 \ie{}
 \begin{align}
     \label{eq:margpostsimilar}
@@ -428,11 +428,11 @@ distribution~\eqref{eq:margpostsimilar} is close to a $\Be(p + 1/2, q)$
 distribution which is hardly different from the $\Be(p, q)$ prior distribution,
 despite perfect compatibility of both data sets. Importantly, the marginal
 posterior~\eqref{eq:margpostsimilar} does not depend on the actual value of the
-standard errors $\sigma$ and $\sigma_0$ but only on the variance ratio $c$. This
-means that~\eqref{eq:margpostsimilar} holds for finite standard errors but also
-in the idealized mathematical situation where both standard errors go equally
-fast to zero (\ie{} infinite sample size), but with possibly different starting
-values ($c\neq 1$).
+standard errors $\sigma$ and $\sigma_0$ but only on the relative variance $c$.
+This means that~\eqref{eq:margpostsimilar} holds for finite standard errors but
+also in the idealized mathematical situation where both standard errors go
+equally fast to zero (\ie{} infinite sample size), but with possibly different
+starting values ($c\neq 1$).
 
 Typically, the historical data are predetermined and only the standard error of
 the current study can be changed. It is therefore interesting to study the
@@ -465,7 +465,7 @@ fixed (but in contrast to the previous situation the parameter estimates $\that$
 and $\that_0$ can take different values). In this case, the integral
 in~\eqref{eq:margpostnormal} can be represented by the confluent hypergeometric
 function
-$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \text{d}t\}/\mbox{B}(b - a, a)$
+$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \text{d}t\}/\mathrm{B}(b - a, a)$
 \citep[chapter 13.2.1]{Abramowitz1964} so that the marginal posterior is given by
 \begin{align}
      \label{eq:limitpostnormal2}
@@ -601,7 +601,7 @@ of~\eqref{eq:margpostalpha} is generally not available in closed form. Yet
 again, it is possible to obtain a closed form expression when the probability
 estimates from both studies are equivalent ($\hat{\theta} = \hat{\theta}_0$).
 Application of Stirling's approximation
-$\Be(x, y) \approx \sqrt{2\pi} x^{x-1/2}y^{y-1/2}(x + y)^{-(x+y-1/2)}$ to both
+$\mathrm{B}(x, y) \approx \sqrt{2\pi} x^{x-1/2}y^{y-1/2}(x + y)^{-(x+y-1/2)}$ to both
 beta functions in the probability mass function of the beta-binomial leads then
 to
 \begin{align}
