@@ -173,7 +173,7 @@ there is no conflict. Here, we show that only the former is true, but not the
 latter, at least in the typical situation where $\alpha$ has a beta prior
 distribution and the data have normal or binomial likelihood. In case of
 conflict, there is instead a limiting posterior distribution that is hardly
-different from the prior. Our results imply that complete discountig is
+different from the prior. Our results imply that complete discounting is
 possible, but complete pooling is impossible.
 
 This paper is structured as follows: We start by showing the claimed result for
