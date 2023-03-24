@@ -36,6 +36,7 @@ CMD if [ "$pdfdocker" = "false" ] ; then \
     && mv figure/* /output/figure/ ; \
     else \
     echo "compiling PDF inside Docker" \
+    && Rscript -e "tinytex::install_tinytex()" --vanilla \
     ## knit Rnw to tex and compile tex inside docker to PDF
     && Rscript -e "knitr::knit2pdf('"$FILE".Rnw')" --vanilla \
     && mv "$FILE".pdf  /output/ ; \
