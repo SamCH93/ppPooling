@@ -21,8 +21,8 @@
 \geometry{
   a4paper,
   total={170mm,257mm},
-  left=25mm,
-  right=25mm,
+  left=20mm,
+  right=20mm,
   top=30mm,
   bottom=25mm,
 }
@@ -82,10 +82,10 @@
 \begin{document}
 \maketitle
 
-%% Disclaimer that a preprint
-\begin{center}
-  {\color{red}This is a preprint which has not yet been peer reviewed.}
-\end{center}
+% %% Disclaimer that a preprint
+% \begin{center}
+%   {\color{red}This is a preprint which has not yet been peer reviewed.}
+% \end{center}
 
 << "main-setup", include = FALSE >>=
 ## knitr options
@@ -182,13 +182,13 @@ that the result also approximately holds in the binomial model
 (Section~\ref{sec:binomial}). The papers then ends with some concluding remarks
 in Section~\ref{sec:discussion}. As a running example we consider data from two
 randomized clinical trials comparing the efficacy of the drugs Fidaxomicin and
-Vancomicin on \textit{Clostridium difficile}-associated diarrhoea in adults
+Vancomycin on \textit{Clostridium difficile}-associated diarrhoea in adults
 (Table~\ref{tab:data}).
 
 \begin{table}[!htb]
   \centering
   \caption{Historical and current data on the comparison between Fidaxcomicin and
-  Vancomicion with respect to their effect on \textit{Clostridium
+  Vancomycin with respect to their effect on \textit{Clostridium
     difficile}-associated diarrhoea in adults. The number of participants and events
     were taken from the respective intention-to-treat analysis of the studies as in
     the meta-analysis of \citet{Nelson2017}.
@@ -230,7 +230,7 @@ rrci0Format <- paste0("(", paste0(round(rrci0, 2), collapse = ", "), ")")
 @
 \begin{tabular}{cccc}
   \toprule
-  Study & Risk (Fidaxomicin) & Risk (Vancomicin) & Risk ratio (95\% CI) \\
+  Study & Risk (Fidaxomicin) & Risk (Vancomycin) & Risk ratio (95\% CI) \\
   \midrule
   \citet{Cornely2012} & $\dfrac{\Sexpr{x}}{\Sexpr{n}} = \Sexpr{round(p*100, 1)}\%$
   & $\dfrac{\Sexpr{x2}}{\Sexpr{n2}} = \Sexpr{round(p2*100, 1)}\%$
@@ -278,7 +278,7 @@ a joint posterior for $\theta$ and $\alpha$, \ie{}
   &= \frac{L(D \given \theta)  \pi(\theta, \alpha \given D_{0})}{\int_{0}^{1} \int_{-\infty}^{\infty}
   L(D \given \theta^{\prime})  \pi(\theta^{\prime}, \alpha^{\prime} \given D_{0})
   \text{d}\theta^\prime \text{d}\alpha^\prime}
-  = \frac{\Nor(\theta \given \theta, \sigma^{2}) \Nor(\theta \given \that_0, \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
+  = \frac{\Nor(\that \given \theta, \sigma^{2}) \Nor(\theta \given \that_0, \sigma^2_0 / \alpha) \Be(\alpha \given p, q)}{
     \int_0^1 \Nor(\that \given \that_0, \sigma^2 + \sigma^2_0 / \alpha^\prime) \Be(\alpha^\prime \given p, q)
     \text{d}\alpha^\prime},
 \end{align*}
@@ -319,7 +319,7 @@ model permits. In contrast, the dotted line indicates that the posterior based
 on complete pooling of the data sets would be somewhat more peaked.
 
 \begin{figure}[!htb]
-<< "figure-analysis-data", fig.height = 3.8 >>=
+<< "figure-analysis-data", fig.height = 3.5, fig.width = 8 >>=
 ## marginal posterior of alpha for data example
 p <- 1
 q <- 1
@@ -493,8 +493,9 @@ that the posterior can become arbitrarily peaked by increasing the sample size
 of the historical study. In contrast, when the parameter estimates are the same
 ($\that = \that_0$) the historical standard error $\sigma_0$ does not influence
 the posterior.
+
 \begin{figure}[!htb]
-<< "figure-limiting-posterior", fig.height = 3.4 >>=
+<< "figure-limiting-posterior", fig.height = 3.2, fig.width = 8 >>=
 ## function to compute limiting posterior of alpha when sr goes to zero
 ## d = (hat(theta) - hat(theta)_0)^2/so^2
 limitPostAlpha <- function(alpha, p, q, d) {
@@ -545,6 +546,7 @@ ggplot(data = plotDF, aes(x = x, y = density, color = ordered(dsqrt))) +
   $|\that- \that_0|/\sigma_0$.}
   \label{fig:limitingpost}
 \end{figure}
+
 The marginal posterior for $\alpha$ can thus at best become a $\Be(p + 1/2, q)$
 if the prior is a $\Be(p , q)$, implying that a complete pooling of historical
 and current data can never be achieved. On the other hand, a complete
@@ -559,7 +561,7 @@ posterior is only slightly peaked at around $\alpha = 0.1$.
 
 \section{Binomial model}
 \label{sec:binomial}
-So far we assumed normal likelihood and a univariate parameter,
+So far we assumed a normal likelihood and a univariate parameter,
 Appendix~\ref{app:normallinear} shows that the previous result can be
 generalized to normal linear models with multivariate parameter $\theta$. In
 this section, we will show that the previous result also holds approximately in
@@ -593,7 +595,7 @@ marginal posterior for $\alpha$ can be obtained by integrating out $\theta$,
   \BetaBin\{x \given n, \alpha^\prime   x_0, \alpha^\prime (n_0 - x_0)\}
   \Be(\alpha^\prime \given p, q) \text{d}\alpha^\prime}
 \end{align}
-with $\Bin(\cdot \given n, \theta)$ the binomial probability mass function and
+with % $\Bin(\cdot \given n, \theta)$ the binomial probability mass function and
 $\BetaBin(\cdot \given n, p, q)$ the beta-binomial probability mass function.
 
 As for the normal model, the integral in the denominator
@@ -618,7 +620,7 @@ limiting marginal posterior distribution of $\alpha$ is thus (approximately) the
 same for normal and binomial model.
 
 \begin{figure}[!htb]
-<< "figure-binomial", fig.height = 3.3 >>=
+<< "figure-binomial", fig.height = 3.2, fig.width = 8 >>=
 ## ## Data as in Gravestock and Held (2017)
 ## ## -----------------------------------------------------------------------------
 ## ## Wunderink (2003): All cause mortality
@@ -756,7 +758,7 @@ different options to alleviate this limitation. For instance, they can use the
 power prior based on a fixed $\alpha$ and use either a ``guide value''
 \citep{Ibrahim2015} or elicit a reasonable value from external knowledge about
 the similarity of the data sets. Another option is to specify informative priors
-which give most of their mass to larger values to $\alpha$, thereby shifting the
+which give most of their mass to larger values of $\alpha$, thereby shifting the
 best-case marginal posterior to larger values as well. Finally, a pragmatic
 alternative is to specify $\alpha$ via an empirical Bayes approach as proposed
 by \citet{Gravestock2017}, which permits complete pooling of both data sets.
