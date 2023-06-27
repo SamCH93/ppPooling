@@ -22,10 +22,6 @@ WORKDIR /analysis
 RUN install2.r --error --skipinstalled --ncpus -1 \
     `cat CRANpackages.txt`
 
-## install R packages from GitHub (use @ for specific version/tag)
-# RUN installGithub.r \
-#     LucasKook/ainet@becabac
-
 ## knit Rnw to tex and compile tex to PDF
 CMD if [ "$pdfdocker" = "false" ] ; then \
     echo "compiling PDF outside Docker" \

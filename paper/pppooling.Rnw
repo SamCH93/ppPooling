@@ -50,7 +50,7 @@
   E-mail: \href{mailto:\mail}{\mail}
 }
 %\date{\today} %don't forget to hard-code date when submitting to arXiv!
-\date{February 20, 2023}
+\date{June 27, 2023}
 
 %% hyperref options
 %% ----------------------------------------------------------------------------
@@ -411,9 +411,9 @@ data in the sense that both parameter estimates are equivalent
 ($\that = \that_0$). In this case, several terms cancel
 in~\eqref{eq:margpostnormal} so that the integral can be represented in terms of
 the hypergeometric function
-\mbox{${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mathrm{B}(b, c - b)$}
-with $\mathrm{B}(x, y)$ the beta function \citep[chapter 15.3.1]{Abramowitz1964},
-\ie{}
+${}_2F_1(a, b, c; z) = \{\int_0^1 t^{b-1}(1-t)^{c - b -1} (1 - tz)^{-a} \text{d}t\}/\mathrm{B}(b, c - b)$
+with $\mathrm{B}(x, y)$ the beta function \citep[section
+15.3.1]{Abramowitz1964}, \ie{}
 \begin{align}
     \label{eq:margpostsimilar}
     \pi(\alpha \given D, D_0, \that = \that_0)
@@ -440,7 +440,7 @@ behavior of~\eqref{eq:margpostsimilar} for $c \to \infty$, \ie{} the current
 standard error $\sigma$ goes to zero while the historical standard error
 $\sigma_0$ remains fixed, reflecting an arbitrary increase of the current sample
 size. In that case it is straightforward to see from the power series
-representation of the hypergeometric function \citep[chapter
+representation of the hypergeometric function \citep[section
 15.1.1]{Abramowitz1964} that
 \begin{align*}
     \lim_{c\to\infty} {}_2F_1(1/2, p + 1/2, p + q + 1/2; -1/c)
@@ -465,8 +465,9 @@ fixed (but in contrast to the previous situation the parameter estimates $\that$
 and $\that_0$ can take different values). In this case, the integral
 in~\eqref{eq:margpostnormal} can be represented by the confluent hypergeometric
 function
-$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \text{d}t\}/\mathrm{B}(b - a, a)$
-\citep[chapter 13.2.1]{Abramowitz1964} so that the marginal posterior is given by
+\mbox{$M(a, b, z) = \{\int_0^1 \exp(zt) t^{a-1}(1-t)^{b-a-1} \text{d}t\}/\mathrm{B}(b - a, a)$}
+\citep[section 13.2.1]{Abramowitz1964} so that the marginal posterior is given
+by
 \begin{align}
      \label{eq:limitpostnormal2}
      \lim_{\sigma \downarrow 0} \pi(\alpha \given D, D_0)
@@ -479,20 +480,7 @@ As expected, the distribution~\eqref{eq:limitpostnormal2} reduces
 to~\eqref{eq:limitpostnormal1} when the parameter estimates are equal
 ($\that = \that_0$) since then the left fraction becomes one, which can be shown
 using the power series representation of the confluent hypergeometric function
-\citep[chapter 13.1.2]{Abramowitz1964}.
-
-Figure~\ref{fig:limitingpost} shows the distribution~\eqref{eq:limitpostnormal2}
-for different values of the parameter estimate difference standardized by the
-historical standard error ($|\that-\that_0|/\sigma_0$). One can see that when
-the parameter estimates become more different (larger $|\that_0 -\that|$) the
-limiting distribution~\eqref{eq:limitpostnormal2} will be increasingly shifted
-towards smaller values of $\alpha$ indicating more incompatibility among the
-data sets and reducing the information borrowing from the historical data. This
-shift amplifies with decreasing historical standard errors $\sigma_0$, meaning
-that the posterior can become arbitrarily peaked by increasing the sample size
-of the historical study. In contrast, when the parameter estimates are the same
-($\that = \that_0$) the historical standard error $\sigma_0$ does not influence
-the posterior.
+\citep[section 13.1.2]{Abramowitz1964}.
 
 \begin{figure}[!htb]
 << "figure-limiting-posterior", fig.height = 3.2, fig.width = 8 >>=
@@ -546,6 +534,20 @@ ggplot(data = plotDF, aes(x = x, y = density, color = ordered(dsqrt))) +
   $|\that- \that_0|/\sigma_0$.}
   \label{fig:limitingpost}
 \end{figure}
+
+
+Figure~\ref{fig:limitingpost} shows the distribution~\eqref{eq:limitpostnormal2}
+for different values of the parameter estimate difference standardized by the
+historical standard error ($|\that-\that_0|/\sigma_0$). One can see that when
+the parameter estimates become more different (larger $|\that_0 -\that|$) the
+limiting distribution~\eqref{eq:limitpostnormal2} will be increasingly shifted
+towards smaller values of $\alpha$ indicating more incompatibility among the
+data sets and reducing the information borrowing from the historical data. This
+shift amplifies with decreasing historical standard errors $\sigma_0$, meaning
+that the posterior can become arbitrarily peaked by increasing the sample size
+of the historical study. In contrast, when the parameter estimates are the same
+($\that = \that_0$) the historical standard error $\sigma_0$ does not influence
+the posterior.
 
 The marginal posterior for $\alpha$ can thus at best become a $\Be(p + 1/2, q)$
 if the prior is a $\Be(p , q)$, implying that a complete pooling of historical

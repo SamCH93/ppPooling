@@ -1,10 +1,10 @@
 # Normalized power priors always discount historical data
 
-This repository contains code and data related to the preprint
+This repository contains code and data related to the paper
 
-Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2022). Normalized power
-priors always discount historical data.
-doi:[10.48550/arXiv.2206.04379](https://doi.org/10.48550/arXiv.2206.04379)
+Pawel, S., Aust, F., Held, L., and Wagenmakers, E.-J. (2023). Normalized power
+priors always discount historical data. Stat, 12( 1), e591.
+DOI:[10.1002/sta4.591](https://doi.org/10.1002/sta4.591)
 
 ## Reproducing the results
 
@@ -47,7 +47,4 @@ make drunpdf
 this should output the file `pppooling.pdf` in the paper directory. The Docker
 approach takes a bit longer but reruns our analyses in a Docker container which
 encapsulates the computational environment (R and R package versions) that was
-used in the original analysis. The only way this approach could become
-irreproducible is when the [rocker/verse](https://hub.docker.com/r/rocker/verse)
-base image becomes unavailable and/or the MRAN snapshot of CRAN becomes
-unavailable.
+used in the original analysis. 
